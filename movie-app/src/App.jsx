@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Search from "./components/Search";
 
+const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const API_OPTIONS = {
   method: "GET",
@@ -16,30 +17,19 @@ const App = () => {
 
   const fetchMovies = async () => {
     try {
-      // const accountRes = await fetch(
-      //   "https://api.themoviedb.org/3/account",
-      //   API_OPTIONS
-      // );
-
-      // if (!accountRes.ok) {
-      //   throw new Error("Failed to fetch movies");
-      // }
-      // const accountData = await accountRes.json();
-      // console.log(accountData);
-      const accountId = null;
-
-      const apiBase = `https://api.themoviedb.org/3/account/${accountId}/favorite/movies`;
-
-      const favResponse = await fetch(apiBase, API_OPTIONS);
-      if (!favResponse.ok) {
-        throw new Error("fallo 2da peticion");
+      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const response = await fetch(endpoint, API_OPTIONS);
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
       }
-
-      const data = await favResponse.json();
+      const data = await response.json();
+      if (data.response === "false") {
+        setErrorMessage(data.Error || "Failed to fetch movies");
+      }
       console.log(data);
     } catch (error) {
-      console.log(`Error fetching movies:${error}`);
-      setErrorMessage("Error fetching movies. Please try again later");
+      console.error(`Error fetching movies: ${error}`);
+      setErrorMessage("Error fetching movies. Please try later");
     }
   };
 
